@@ -1,6 +1,6 @@
 from ninja import ModelSchema, Schema
 from django import forms
-from main_app.models import Transaction
+from transactions_app.models import Transaction
 from datetime import datetime
 from pydantic import ConfigDict, Field
 

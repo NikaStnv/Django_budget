@@ -29,7 +29,7 @@ class AppUserManager(BaseUserManager):
 
 class AppUsers(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', unique=True)
-    phone = models.CharField('phone namber', max_length=10, unique=True, blank=True)
+    phone = models.CharField('phone number', max_length=10, unique=True, blank=True)
     date_of_birth = models.DateField('date of birth', null=True, blank=True)
     first_name = models.CharField('first name', max_length=30, blank=True)
     last_name = models.CharField('last name', max_length=50, blank=True)

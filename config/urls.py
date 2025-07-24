@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.template.defaultfilters import title
 from django.urls import path
 from ninja import NinjaAPI
-from main_app.api.routers import router
+from transactions_app.api.routers import router
 
 api = NinjaAPI(title='Budget API', version='1.0', docs_url='/docs/')
 

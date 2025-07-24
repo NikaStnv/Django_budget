@@ -1,7 +1,7 @@
 from ninja import Router
 from django.shortcuts import get_object_or_404
 from typing import List
-from main_app.models import Transaction
+from transactions_app.models import Transaction
 from .schemas import TransactionForm, TransactionUpdate, TransactionOut
 from ninja.errors import HttpError
 

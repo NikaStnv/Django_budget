@@ -41,8 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ninja',
-    'main_app',
+    'transactions_app',
     'users_app',
+    'fin_report_app',
 
 ]
 
