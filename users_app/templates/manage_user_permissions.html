@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Керування доступами користувача</title>
+</head>
+<body>
+    <h2>Керування доступами</h2>
+    
+    <form method="get">
+        <select name="user_id" onchange="this.form.submit()">
+            <option value="">-- Оберіть --</option>
+            {% for user in users %}
+            <option value="{{ user.id }}" {% if selected_user.id == user.id %}selected{% endif %}>
+                {{ user.email }}
+            </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if selected_user %}
+    <h3>{{ selected_user.email }}</h3>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="user_id" value="{{ selected_user.id }}">
+        
+        {% for checkbox in form.permissions %}
+            <div>
+                {{ checkbox.tag }} {{ checkbox.choice_label }}
+            </div>
+        {% endfor %}
+        
+        <button type="submit">Зберігти</button>
+    </form>
+    {% endif %}
+
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+</body>
+</html>

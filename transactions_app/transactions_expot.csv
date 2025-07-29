@@ -1,0 +1,4 @@
+Amount,Type,Description,Transaction Date,Is Planned
+5000.00,Дохід,ЗП,2025-06-30,True
+45.00,Витрата,Водопостачання,2025-07-23,True
+133.99,Витрата,Сніданок,2025-07-01,False

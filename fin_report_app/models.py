@@ -17,6 +17,20 @@ class FinancialReport(models.Model):
         ordering = ['-created_at']
         permissions = [('can_export_reports', "User can export the reports")]
 
+    def _get_transaction_sum(self, transaction_type, start_date=None, end_date=None):
+        # Фільтр по типу транзакції (income/expense)
+        filters = {"type_transaction": transaction_type}
+
+        # Если заданы даты — добавляем фильтр по периоду
+        if start_date and end_date:
+            filters["created_at__date__gte"] = start_date
+            filters["created_at__date__lte"] = end_date
+
+        # Суммируем amount через aggregate(Sum()) и возвращаем результат (или 0, если None)
+        return Transaction.objects.filter(**filters).aggregate(
+            total=Sum("amount")
+        )["total"] or 0
+
 
     @property
     def period_income(self):

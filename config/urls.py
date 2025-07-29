@@ -15,10 +15,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from django.template.defaultfilters import title
-from django.urls import path
+from django.urls import path, include
 from ninja import NinjaAPI
 from transactions_app.api.routers import router
+from users_app.views import manage_user_permissions
 
 api = NinjaAPI(title='Budget API', version='1.0', docs_url='/docs/')
 
@@ -27,4 +30,10 @@ api.add_router('/', router)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', api.urls),
+    path('permissions/manage_permissions/', manage_user_permissions),
+    path('permissions/', include('users_app.urls'))
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -13,15 +13,12 @@ class UserPermissionsForm(forms.Form):
 
         permissions = Permission.objects.all()
         self.fields['permissions'].choices = [
-            (
-                (perm.id, f'{perm.content_type.app_label}.{perm.codename} - {perm.name}')
-                for perm in permissions.order_by('content_type__app_label', )
-            )
+            (perm.id, f'{perm.content_type.app_label}.{perm.codename} - {perm.name}')
+            for perm in permissions.order_by('content_type__app_label', )
         ]
-
         if user:
             user_permissions = user.user_permissions.values_list('id', flat=True)
-            self.fields['permissions'].initial = user_permissions
+            self.fields['permissions'].initial = list(user_permissions)
 
 
 
