@@ -9,6 +9,7 @@ import datetime
 import csv
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.db import models
 
 
 class TransactionAdminForm(forms.ModelForm):
@@ -148,17 +149,34 @@ class TransactionAdmin(admin.ModelAdmin):
     export_as_csv.short_description = "Експортувати як CSV"
     
     # list_template = 'admin/transactions_list.html'
-    # change_form_template = 'admin/transactions_change_form.html'
+    # change_list_tamplate =  'admin/transactions_list.html'    
+    change_form_template = 'admin/transactions_change_form.html'
 
-    # class Media:
-    #     css = {
-    #         'all': ('admin/css/transactions_admin.css',)
-    #     }
-    #     js = ('admin/js/transactions_admin.js',)
+    class Media:
+        css = {
+            'all': ('admin/css/transactions_admin.css',)
+        }
+        js = ('admin/js/transactions_admin.js',)
 
-    #     def get_urls(self):
-    #         urls = super().get_urls()
-    #         custom_urls = [
-    #             path('dashboard/', self.admin_site.admin_view(self.dashboard_view)),
-    #         ]
-    #         return custom_urls + urls
+        def get_urls(self):
+            urls = super().get_urls()
+            custom_urls = [
+                path('dashboard/', self.admin_site.admin_view(self.dashboard_view)),
+            ]
+            return custom_urls + urls
+        
+        def dashboard_view(self, request):
+            total_income = Transaction.objects.filter(type_transaction='income').aggregate(total=models.Sum('amount'))['total'] or 0
+            total_expense = Transaction.objects.filter(type_transaction='expense').aggregate(total=models.Sum('amount'))['total'] or 0
+            balance = total_income - total_expense
+            current_date = datetime.date.today()
+            context = dict(
+                self.admin_site.each_context(request),
+                title='Загальна інформація',
+                current_date=current_date,
+                total_income=total_income,
+                total_expense=total_expense,
+                balance=balance,
+                )
+            return TemplateResponse(request, 'admin/transactions_dashboard.html', context)
+        

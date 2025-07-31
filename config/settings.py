@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+
 from pathlib import Path
 
 from django.conf.global_settings import AUTH_USER_MODEL
@@ -41,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ninja',
-    'transactions_app',
+    'transactions_app.apps.TransactionsAppConfig',
     'users_app.apps.UsersAppConfig',
     'fin_report_app',
 
