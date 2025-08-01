@@ -148,9 +148,9 @@ class TransactionAdmin(admin.ModelAdmin):
         return response
     export_as_csv.short_description = "Експортувати як CSV"
     
-    # list_template = 'admin/transactions_list.html'
-    # change_list_tamplate =  'admin/transactions_list.html'    
-    change_form_template = 'admin/transactions_change_form.html'
+
+    change_list_template = 'admin/transaction_change_list.html'    
+    change_form_template = 'admin/transaction_change_form.html'
 
     class Media:
         css = {
@@ -165,18 +165,45 @@ class TransactionAdmin(admin.ModelAdmin):
             ]
             return custom_urls + urls
         
-        def dashboard_view(self, request):
+    def get_finance_data(self, request):
             total_income = Transaction.objects.filter(type_transaction='income').aggregate(total=models.Sum('amount'))['total'] or 0
             total_expense = Transaction.objects.filter(type_transaction='expense').aggregate(total=models.Sum('amount'))['total'] or 0
             balance = total_income - total_expense
             current_date = datetime.date.today()
-            context = dict(
-                self.admin_site.each_context(request),
-                title='Загальна інформація',
-                current_date=current_date,
-                total_income=total_income,
-                total_expense=total_expense,
-                balance=balance,
-                )
-            return TemplateResponse(request, 'admin/transactions_dashboard.html', context)
+            return {
+                'total_income': total_income,
+                'total_expense': total_expense,
+                'balance': balance,
+                'current_date': current_date,
+            }
+
+    def changelist_view(self, request, extra_context=None):
+            extra_context = extra_context or {}
+            finance_data = self.get_finance_data(request)
+            extra_context.update(finance_data)
+            return super().changelist_view(request, extra_context=extra_context)
+    
+    def dashboard_view(self, request):
+        finance_data = self.get_finance_data(request)
+        context = dict(
+            self.admin_site.each_context(request),
+            title='Загальна інформація',
+            **finance_data,
+        )
+        return TemplateResponse(request, 'admin/transactions_dashboard.html', context)
+    
         
+        # def dashboard_view(self, request):
+        #     total_income = Transaction.objects.filter(type_transaction='income').aggregate(total=models.Sum('amount'))['total'] or 0
+        #     total_expense = Transaction.objects.filter(type_transaction='expense').aggregate(total=models.Sum('amount'))['total'] or 0
+        #     balance = total_income - total_expense
+        #     current_date = datetime.date.today()
+        #     context = dict(
+        #         self.admin_site.each_context(request),
+        #         title='Загальна інформація',
+        #         current_date=current_date,
+        #         total_income=total_income,
+        #         total_expense=total_expense,
+        #         balance=balance,
+        #         )
+        #     return TemplateResponse(request, 'admin/transactions_dashboard.html', context)
