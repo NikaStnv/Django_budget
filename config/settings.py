@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'ninja',
     'transactions_app.apps.TransactionsAppConfig',
     'users_app.apps.UsersAppConfig',
-    'fin_report_app',
+    'fin_report_app.apps.FinReportAppConfig',
 
 
 ]
@@ -129,6 +129,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'transactions_app/static',
+]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type

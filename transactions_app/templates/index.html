@@ -1,0 +1,169 @@
+<!DOCTYPE html>     
+<html lang="uk">
+    <head>
+        <link rel="icon" href="data:,">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Обробка файлів</title>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    </head>    
+    <body>
+        <h1>Робота з файлами</h1>
+        <h2>Завантажте файл для обробки</h2>
+            <input type="file" id="fileInput" name="fileInput" accept=".txt,.csv,.json" required>
+            <button onclick="uploadFile()">Завантажити</button>
+            <div id="result"></div>
+
+        <h2>Список файлів</h2>
+            <button id="listFiles">Оновити Список</button>
+            <div id="fileList"></div>
+
+        <h2>Вміст файлу</h2>
+            <div id="fileContent"></div>
+
+        <script>
+            function uploadFile() {
+                const fileInput = $('#fileInput')[0];
+                if (!fileInput.files.length) {
+                    $('#result').html('<p class="error">Будь ласка, виберіть файл для завантаження!</p>').fadeIn();
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('file', fileInput.files[0]);
+
+                $.ajax({
+                    url: '/upload/',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+
+                    success: function(response) {
+                        if (response.error) {
+                            $('#result').html('<p class="error">Помилка: ${response.error}</p>').fadeIn();
+                        } else {
+                            $('#result').html(
+                                `<p class="success">Файл успішно завантажено!</p>` +
+                                `<p>Ідентифікатор файлу: ${response.id}</p>` +
+                                `<p>Назва файлу: ${response.file_name}</p>` + 
+                                `<p>Кількість слів: ${response.word_count}</p>` +
+                                `<p>Кількість символів: ${response.char_count}</p>` +
+                                `<p>Завантажено: ${response.uploaded_at}</p>` +
+                                `<p><a href="${response.file_url}" download>Завантажити</a></p>`
+                            ).fadeIn();
+                            listFiles();
+                        }
+                    },
+                    error: function() {
+                        $('#result').html('<p class="error">Помилка при завантаженні файлу.</p>').fadeIn();
+                    }
+              });
+            }
+            function listFiles() {
+                $.ajax({
+                    url: '/files/',
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.files.length === 0) {
+                            $('#fileList').html('<p class="error">Немає файлів для відображення.</p>');
+                        } else {
+                            let filesHtml = '<ul>';
+                            response.files.forEach(file => {
+                                filesHtml += `<li>
+                                    ${file.file_name} (Завантажено: ${file.uploaded_at})
+                                    <a href="${file.file_url}" target="_blank">${file.file_name}</a> 
+                                    <button onclick="viewFile('${file.id}')">Переглянути</button>
+                                    <button onclick="deleteFile(${file.id})">Видалити</button>
+                                    <a href="${file.file_url}" download>Завантажити</a>
+                                </li>`;
+                            });
+                            filesHtml += '</ul>';
+                            $('#fileList').html(filesHtml);
+                        }
+                    },
+                    error: function() {
+                        $('#result').html('<p class="error">Помилка серверу.</p>').fadeIn(); 
+                    }
+                });
+            }
+                
+            function viewFile(id) {
+                $.ajax({
+                    url: `/files/${id}/`,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.error) {
+                            $('#fileContent').html('<p class="error">Помилка: ${response.error}.</p>');
+                        } else {
+                            $('#fileContent').html(
+                                    `<p>Назва файлу: ${response.file_name}</p>` +
+                                    `<p>Кількість слів: ${response.word_count}</p>` +
+                                    `<p>Кількість символів: ${response.char_count}</p>` +
+                                    `<p>Завантажено: ${response.uploaded_at}</p>` +
+                                    `<p><a href="${response.file_url}" download>Завантажити</a></p>`
+                            ).fadeIn();
+                        }
+                    },
+                    error: function() {
+                        $('#fileContent').html('<p class="error">Помилка при отриманні вмісту файлу.</p>').fadeIn();
+                    }
+                });
+            }
+            function deleteFile(id) {
+                if (confirm('Ви впевнені, що хочете видалити цей файл?')) {
+                    $.ajax ({
+                        url: `/files/${id}/delete/`,
+                        type: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        success: function(response) {
+                            if (response.error) {
+                                $('#result').html(`<p class="error">Помилка: ${response.error}</p>`).fadeIn();
+                            } else {
+                                $('#result').html(`<p>${response.message}</p>`).fadeIn();
+                                listFiles();
+                                $('#fileContent').fadeOut();
+                            }
+                        },
+                        error: function() {
+                            $('#result').html(`<p class="error">Помилка при видаленні файлу.</p>'`.fadeIn();
+                        }
+                    })
+                }
+            }
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            $(document).ready(() => {
+                listFiles();
+            });
+               
+                // $(document).ready(function {
+                //     $('#fileInput').on('change', function() {
+                //         $('#result').fadeOut();
+                //     });
+                //     $('#listFiles').on('click', function() {
+                //         listFiles();
+                //     });
+                // });
+            
+        </script>
+    </body>  
+</html>

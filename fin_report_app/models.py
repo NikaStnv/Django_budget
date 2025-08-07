@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from transactions_app.models import Transaction
 from django.db.models import Sum
@@ -62,3 +63,26 @@ class FinancialReport(models.Model):
                 f"Загальні витрати - {self.total_expenses}\n "
                 f"Баланс за період - {self.period_balance}\n"
                 f"Поточний баланс - {self.total_balance}")
+
+
+class UploadedFiles(models.Model):
+    file = models.FileField(upload_to='uploads/', verbose_name="Файл")
+    file_name = models.CharField(max_length=200, verbose_name="Назва файлу")
+    uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата завантаження")
+    word_count = models.IntegerField(default=0, verbose_name="Кількість слів у файлі")
+    char_count = models.IntegerField(default=0, verbose_name="Кількість символів у файлі")
+    
+    class Meta:
+        verbose_name = "Завантажений файл"
+        verbose_name_plural = "Завантажені файли"
+
+    def __str__(self):
+        return f"Файл: {self.file.name} (Завантажено: {self.uploaded_at})"
+    
+    def delete(self, *args, **kwargs):
+        if self.file:
+            if os.path.exists(self.file.path):
+                os.remove(self.file.path)
+        super().delete(*args, **kwargs)
+        return f"Файл {self.file_name} видалено."
+    

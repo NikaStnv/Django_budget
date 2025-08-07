@@ -21,3 +21,6 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.register(AppUsers, CustomUserAdmin)
 
+
+
+

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from transactions_app.models import Transaction
+from transactions_app.models import Transaction, Message
 from django import forms
 from django.urls import path
 from django.http import HttpResponse
@@ -154,9 +154,9 @@ class TransactionAdmin(admin.ModelAdmin):
 
     class Media:
         css = {
-            'all': ('admin/css/transactions_admin.css',)
+            'all': ('admin/css/transaction_admin.css',)
         }
-        js = ('admin/js/transactions_admin.js',)
+        js = ('admin/js/transaction_admin.js',)
 
         def get_urls(self):
             urls = super().get_urls()
@@ -193,17 +193,7 @@ class TransactionAdmin(admin.ModelAdmin):
         return TemplateResponse(request, 'admin/transactions_dashboard.html', context)
     
         
-        # def dashboard_view(self, request):
-        #     total_income = Transaction.objects.filter(type_transaction='income').aggregate(total=models.Sum('amount'))['total'] or 0
-        #     total_expense = Transaction.objects.filter(type_transaction='expense').aggregate(total=models.Sum('amount'))['total'] or 0
-        #     balance = total_income - total_expense
-        #     current_date = datetime.date.today()
-        #     context = dict(
-        #         self.admin_site.each_context(request),
-        #         title='Загальна інформація',
-        #         current_date=current_date,
-        #         total_income=total_income,
-        #         total_expense=total_expense,
-        #         balance=balance,
-        #         )
-        #     return TemplateResponse(request, 'admin/transactions_dashboard.html', context)
+admin.site.register(Message)  # Register the Message model in the admin
+
+
+

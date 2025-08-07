@@ -17,21 +17,18 @@ Including another URLconf
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from django.template.defaultfilters import title
 from django.urls import path, include
-from ninja import NinjaAPI
-from transactions_app.api.routers import router
 from users_app.views import manage_user_permissions
-
-api = NinjaAPI(title='Budget API', version='1.0', docs_url='/docs/')
-
-api.add_router('/', router)
+from django.views.generic import TemplateView
+from .api import api_1  # Импортируем только готовый объект API
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', api.urls),
+    path('api/', api_1.urls),
     path('permissions/manage_permissions/', manage_user_permissions),
-    path('permissions/', include('users_app.urls'))
+    path('permissions/', include('users_app.urls')),
+    path('', include('fin_report_app.urls')),
+    path('', TemplateView.as_view(template_name='index.html'), name='index'),
 ]
 
 if settings.DEBUG:

@@ -30,3 +30,15 @@ class Transaction(models.Model):
 
     class Meta:
         ordering = ['transaction_date', 'amount']
+
+
+class Message(models.Model):
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.text  # Return first 50 characters of the message text
+
+    class Meta:
+        ordering = ['-created_at']

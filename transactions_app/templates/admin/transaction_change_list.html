@@ -1,7 +1,9 @@
 {% extends 'admin/change_list.html' %}
+{% load static %}
+
 {% block content %}
     <div style="padding: 10px; background: #9ec9d6; margin-bottom: 15px; font-size: 14px;">
-        <strong>Curretn date:</strong> {{ current_date|date:"J. M, Y" }} | 
+        <strong>Current date:</strong> {{ current_date|date:"d. M, Y" }} | 
         <strong>Balans:</strong> 
         <span style="color: {% if balance > 0 %}green{% else %}red{% endif %}; font-weight: bold;">
             {{ balance|floatformat:2 }} UAH.
