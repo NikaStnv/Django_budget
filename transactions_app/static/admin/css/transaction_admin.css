@@ -1,11 +1,15 @@
 .field-description {
-    background-color: #f8e2f4;
+    background-color: #dd78ca;
+    color: #ffffff !important;
     padding: 10px;
     margin: 5px 0;
     border-radius: 5px;
     font-family: Arial, sans-serif;
     font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(215, 110, 168, 0.1);
+    font-weight: 500;       /* Немного жирнее */
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.2); /* Лёгкая тень для лучшей читаемости */
+    letter-spacing: 0.5px;  /* Немного разрядить буквы */
 
 }
 

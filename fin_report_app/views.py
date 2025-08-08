@@ -1,10 +1,7 @@
-import os
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
-from django.core.files.storage import FileSystemStorage
-from fin_report_app.models import FinancialReport, UploadedFiles
+from django.shortcuts import get_object_or_404
+from fin_report_app.models import UploadedFiles
 from fin_report_app.signals import limit_signal
-
 
 def upload_file(request):
     if request.method == 'POST' and request.FILES.get('file'):
@@ -20,11 +17,12 @@ def upload_file(request):
                 file=file,
                 file_name=file.name,
                 word_count=word_count,
-                char_count=char_count
+                char_count=char_count,
+              
             )
-            limit_signal.send(sender=UploadedFiles, instance=uploaded_file) 
+            
             uploaded_file.save()
-
+            limit_signal.send(sender=UploadedFiles, instance=uploaded_file) 
                         
             return JsonResponse({
                 'id': uploaded_file.id,

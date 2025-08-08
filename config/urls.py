@@ -29,6 +29,7 @@ urlpatterns = [
     path('permissions/', include('users_app.urls')),
     path('', include('fin_report_app.urls')),
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
+    path('mixins/', include('mixins_app.urls')),
 ]
 
 if settings.DEBUG:

@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'transactions_app.apps.TransactionsAppConfig',
     'users_app.apps.UsersAppConfig',
     'fin_report_app.apps.FinReportAppConfig',
-
+    'mixins_app.apps.MixinsAppConfig',
 
 ]
 
@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -143,3 +144,4 @@ AUTH_USER_MODEL = 'users_app.AppUsers'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+

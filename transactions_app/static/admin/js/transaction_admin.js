@@ -11,11 +11,11 @@
             
             if (text === 'Дохід') {
                 // Підсвічуємо всю строку зеленим
-                cell.closest('tr').style.backgroundColor = '#e6f7e6';
+                cell.closest('tr').style.backgroundColor = '#50b4b4ff';
             } 
             else if (text === 'Витрата') {
                 // Підсвічуємо всю строку зеленим
-                cell.closest('tr').style.backgroundColor = '#ffebee';
+                cell.closest('tr').style.backgroundColor = '#a54754ff';
             }
         });
     });

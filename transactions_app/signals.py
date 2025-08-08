@@ -1,6 +1,7 @@
-from django.db.models.signals import post_save, pre_delete
-from django.dispatch import receiver
+from django.db.models.signals import post_save, pre_save
 from transactions_app.models import Transaction, Message
+from fin_report_app.models import FinancialReport
+from django.dispatch import receiver
 
 class MessageContexProcessor:
     _messages = []
@@ -23,8 +24,8 @@ class MessageContexProcessor:
         
 
 @receiver(post_save, sender=Transaction)
-def transaction_saved(sender, instance, **kwargs): 
-    if instance.pk is None:
+def transaction_saved(sender, instance, created, **kwargs): 
+    if created:
         MessageContexProcessor().add_message(
             'success', f"Транзакція '{instance}' успішно створена."
         )
@@ -34,3 +35,16 @@ def transaction_saved(sender, instance, **kwargs):
             'info', f"Транзакція '{instance}' оновлена."
         )
         MessageContexProcessor.upload_messages()
+
+        
+
+# @receiver(post_save, FinancialReport)
+# def check_balance_limit(sender, instance, **kwargs):
+#     balance_limit = 1000
+        
+#     if instance.total_balance < balance_limit:
+#         MessageContexProcessor().add_message(
+#             level='warning',
+#             text=f"Баланс менше встановленого мінімального ліміту {balance_limit}!"
+#         )
+#         MessageContexProcessor.upload_messages()
