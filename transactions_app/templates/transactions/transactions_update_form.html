@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Редагувати транзакцію #{{ object.id }}</title>
+    <style>
+        .error { color: red; }
+        .form-group { margin: 10px 0; }
+        .btn { 
+            padding: 8px 16px;
+            cursor: pointer;
+            border: none;
+            margin-right: 10px;
+        }
+        .btn-save { background: #28a745; color: white; }
+        .btn-cancel { background: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+    <h2>Редагувати транзакцію #{{ object.id }}</h2>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+            {{ message }}
+        </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    <form method="post" action="{{ request.path }}" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {% for field in form %}
+        <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+            {{ field }}
+            {% if field.errors %}
+                <div class="error">{{ field.errors }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        
+        <div>
+            <button type="submit" class="btn btn-save">Зберегти</button>
+            <a href="{% url 'list' %}" class="btn btn-cancel">Скасувати</a>
+        </div>
+        
+    </form>
+
+
+</body>
+</html>

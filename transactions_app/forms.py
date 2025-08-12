@@ -3,6 +3,7 @@ from .models import Transaction
 from datetime import datetime
 
 
+
 class TransactionForm(forms.ModelForm):
     def clean_amount(self):
         amount = self.cleaned_data.get('amount')

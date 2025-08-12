@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Транзакції</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .income { color: green; }
+        .expense { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Мої транзакції</h1>
+    
+        
+    <table>
+        <tr>
+            <th>Дата</th>
+            <th>Тип</th>
+            <th>Сума</th>
+            <th>Опис</th>
+            <th>ID</th>
+        </tr>
+        {% for transaction in transactions %}
+        <tr>
+            <td>{{ transaction.transaction_date|date:"d.m.Y" }}</td>
+            <td class="{{ transaction.type_transaction }}">
+                {{ transaction.get_type_transaction_display }}
+            </td>
+            <td>{{ transaction.amount }} ₴</td>
+            <td>{{ transaction.description|default:"-" }}</td>
+            <td>{{ transaction.id }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">Немає транзакцій</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

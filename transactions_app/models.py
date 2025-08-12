@@ -1,6 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import Permission
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class Transaction(models.Model):
     INCOME = 'income'
@@ -15,7 +16,11 @@ class Transaction(models.Model):
     transaction_document = models.FileField(upload_to='transaction_documents/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     
+
     @classmethod
     def get_balance(cls, user=None):
         all_transactions = cls.objects.all()
@@ -30,6 +35,7 @@ class Transaction(models.Model):
 
     class Meta:
         ordering = ['transaction_date', 'amount']
+        
 
 
 class Message(models.Model):

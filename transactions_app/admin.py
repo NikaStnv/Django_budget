@@ -93,9 +93,9 @@ class TransactionPlannedFilter(admin.SimpleListFilter):
 class TransactionAdmin(admin.ModelAdmin):
     form = TransactionAdminForm
     list_per_page = 10
-    list_display = ('amount', 'type_transaction', 'description', 'transaction_date', 'is_planned', 'document_preview',)
+    list_display = ('amount', 'type_transaction', 'description', 'transaction_date', 'is_planned', 'document_preview', 'user', 'id')
     list_filter = (TransactionTypeFilter, TransactionDateFilter, TransactionPlannedFilter)
-    list_editable= ('is_planned', 'description',)
+    list_editable= ('is_planned', 'type_transaction', 'description', 'transaction_date',)
     search_fields = ('amount', 'description',)
     ordering = ('-created_at',)
     fieldsets = (
@@ -103,7 +103,7 @@ class TransactionAdmin(admin.ModelAdmin):
             'fields': ('amount', 'type_transaction', 'transaction_date',),
         }),
         ('Details', {
-            'fields': ('is_planned', 'description',),
+            'fields': ('is_planned', 'description', 'user', 'is_deleted'),
             'classes': ('collapse',)
         }),
         ('Document', {
