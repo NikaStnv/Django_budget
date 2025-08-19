@@ -11,8 +11,19 @@ class TransactionListView(StrictAuthMixin, UserFilterMixin, ExcludeDeletedMixin,
     template_name = 'transactions/transactions_list.html'
     context_object_name = 'transactions'
  
+    # def get_queryset(self):
+    #     return super().get_queryset().order_by('-transaction_date')
+
     def get_queryset(self):
-        return super().get_queryset().order_by('-transaction_date')
+        return super().get_queryset()
+        search_name = self.request.GET.get('example_name')
+        search_description = sefl.request.GET.get('example_description')
+        if search_name:
+            qs = qs.filter(name__icontains=search_name)
+        if search_name:
+            qs = qs.filter(name__icontains=search_description)
+        return qs
+
 
 
 class TransactionCreateView(StrictAuthMixin, UserFormMixin, CreateView):

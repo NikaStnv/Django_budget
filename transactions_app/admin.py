@@ -1,5 +1,5 @@
 from django.contrib import admin
-from transactions_app.models import Transaction, Message
+from transactions_app.models import Transaction, Message, Clients
 from django import forms
 from django.urls import path
 from django.http import HttpResponse
@@ -100,7 +100,7 @@ class TransactionAdmin(admin.ModelAdmin):
     ordering = ('-created_at',)
     fieldsets = (
         ('Basic info', {
-            'fields': ('amount', 'type_transaction', 'transaction_date',),
+            'fields': ('clients', 'amount', 'type_transaction', 'transaction_date',),
         }),
         ('Details', {
             'fields': ('is_planned', 'description', 'user', 'is_deleted'),
@@ -193,7 +193,8 @@ class TransactionAdmin(admin.ModelAdmin):
         return TemplateResponse(request, 'admin/transactions_dashboard.html', context)
     
         
-admin.site.register(Message)  # Register the Message model in the admin
+admin.site.register(Message) 
+admin.site.register(Clients) # Register the Message model in the admin
 
 
 

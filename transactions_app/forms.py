@@ -14,7 +14,7 @@ class TransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
         fields = ['type_transaction', 'amount', 'description']
-
+я
 
 class TransactionUpdate(forms.ModelForm):
     def clean_amount(self):

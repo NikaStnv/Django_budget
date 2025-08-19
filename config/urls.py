@@ -20,6 +20,7 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from users_app.views import manage_user_permissions
 from django.views.generic import TemplateView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .api import api_1  # Импортируем только готовый объект API
 
 urlpatterns = [
@@ -31,6 +32,9 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='index'),
     path('mixins/', include('mixins_app.urls')),
     path('transactions/', include('transactions_app.urls')),
+    path('drf_api/', include('transactions_app.urls')),
+    path('api/token/', TokenObtainPairView.as_view(), name='obtain_token_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='refresh_token'),
 ]
 
 if settings.DEBUG:
