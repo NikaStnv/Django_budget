@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from transactions_app.models import Transaction
 from mixins_app.mixins import SoftDeleteMixin, StrictAuthMixin, UserFilterMixin, UserFormMixin, FilterFiniceStatsMixin
 from mixins_app.mixins import LockedFieldsMixin, ExcludeDeletedMixin, LastWeekFilterMixin, SuccessMessageMixin, FiniceStatsMixin
+from django.core.exceptions import PermissionDenied
 
 
 class TransactionListView(StrictAuthMixin, UserFilterMixin, ExcludeDeletedMixin,  ListView):
@@ -13,7 +14,6 @@ class TransactionListView(StrictAuthMixin, UserFilterMixin, ExcludeDeletedMixin,
  
     # def get_queryset(self):
     #     return super().get_queryset().order_by('-transaction_date')
-
     def get_queryset(self):
         return super().get_queryset()
         search_name = self.request.GET.get('example_name')
@@ -28,7 +28,7 @@ class TransactionListView(StrictAuthMixin, UserFilterMixin, ExcludeDeletedMixin,
 
 class TransactionCreateView(StrictAuthMixin, UserFormMixin, CreateView):
     model = Transaction
-    fields = ['amount', 'type_transaction', 'transaction_date', 'description', 'is_planned', 'transaction_document']  
+    fields = ['amount', 'type_transaction', 'transaction_date', 'description', 'is_planned', 'transaction_document', 'clients']  
     template_name = 'transactions/transaction_create_form.html'
     success_url = reverse_lazy('list')
 
@@ -46,12 +46,34 @@ class TransactionHardDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'transactions/transactions_confirm_delete.html'
     success_url = reverse_lazy('list')
 
+    def get_queryset(self):
+        # Додаємо перевірку, що користувач може видаляти тільки свої транзакції
+        return super().get_queryset().filter(user=self.request.user)
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Додаткова перевірка перед видаленням
+        self.object = self.get_object()
+        if self.object.user != self.request.user:
+            raise PermissionDenied("Ви не можете видаляти чужі транзакції")
+        return super().dispatch(request, *args, **kwargs)
+
 
 
 class TransactionSoftDeleteView(LoginRequiredMixin, SoftDeleteMixin, DeleteView):
     model = Transaction
     template_name = 'transactions/transactions_confirm_delete.html'
     success_url = reverse_lazy('list')
+
+    def get_queryset(self):
+        # Додаємо перевірку, що користувач може видаляти тільки свої транзакції
+        return super().get_queryset().filter(user=self.request.user)
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Додаткова перевірка перед видаленням
+        self.object = self.get_object()
+        if self.object.user != self.request.user:
+            raise PermissionDenied("Ви не можете видаляти чужі транзакції")
+        return super().dispatch(request, *args, **kwargs)
 
 
 class TransactionDetailView(FilterFiniceStatsMixin, DetailView):
@@ -61,6 +83,5 @@ class TransactionDetailView(FilterFiniceStatsMixin, DetailView):
         return Transaction.objects.filter(
             user=self.request.user,
             is_deleted=False)
-
 
 

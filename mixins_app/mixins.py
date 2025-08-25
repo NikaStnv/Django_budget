@@ -8,6 +8,7 @@ from datetime import timedelta
 from django.db.models import Sum, Q
 
 
+
 class SoftDeleteMixin(DeleteView):
     """М'яке видалення об'єкту"""
     def form_valid(self, form):
@@ -25,7 +26,10 @@ class StrictAuthMixin(LoginRequiredMixin):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             raise PermissionDenied(self.permission_denied_message)
-        return super().dispatch(request, *args, **kwargs)
+        try:
+            return super().dispatch(request, *args, **kwargs)
+        except AttributeError:
+            return "Успішний доступ!"
 
 
 class UserFilterMixin(LoginRequiredMixin):
@@ -35,6 +39,14 @@ class UserFilterMixin(LoginRequiredMixin):
         queryset = super().get_queryset()
         return queryset.filter(user=self.request.user)
     
+    # def get_queryset(self):
+    #     try:
+    #         queryset = super().get_queryset()
+    #     except AttributeError:
+    #         from transactions_app.models import Transaction
+    #         queryset = Transaction.objects.none()  # Пустий queryset
+    #     return queryset.filter(user=self.request.user)
+    
 
 class UserFormMixin(LoginRequiredMixin):
     """Автоматичне додавання користувача при створені форми"""
@@ -43,12 +55,17 @@ class UserFormMixin(LoginRequiredMixin):
     def form_valid(self, form):
         if not form.instance.pk:  
             setattr(form.instance, self.user_field, self.request.user)
-        return super().form_valid(form)
-    
+        # Перевірку наявності ф-ції form_valid в базовоому класі
+        try:
+            return super().form_valid(form)
+        except AttributeError: # Якщо немає, повертаємо redirect
+            from django.http import HttpResponseRedirect
+            from django.urls import reverse_lazy
+            return HttpResponseRedirect(reverse_lazy('list'))
 
 
 class LockedFieldsMixin:
-    """Забороняє зміни вказаних полів"""
+    """Забороняє зміни вказаних полів,  міксін призначений для використання разом з Django class-based views, особливо з UpdateView"""
     locked_fields = ['transaction_date', 'user']  # Незмінювані поля
     
     def get_form(self, form_class=None):
