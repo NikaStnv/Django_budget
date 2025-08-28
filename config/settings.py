@@ -94,7 +94,7 @@ DATABASES = {
         'NAME': 'budget_dj_psql_db',
         'USER': 'postgres',
         'PASSWORD': '2220',
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }

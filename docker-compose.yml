@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  web:
+    build: .      # Зібрати образ з Dockerfile в поточній директорії
+    command: sh -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    restart: always
+    
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+       - POSTGRES_USER=postgres
+       - POSTGRES_PASSWORD=2220
+       - POSTGRES_DB=budget_dj_psql_db
+
+# Запуск/перезапуск командою: docker-compose up -d --build
+# Перезапуск командою: docker-compose up -d --force-recreate
+
